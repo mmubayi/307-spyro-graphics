@@ -1,0 +1,447 @@
+/*
+Copyright 2018 Maya Mubayi, Wellesley College Computer Science Department
+This code is intended for project submission and is open for use to students in 
+the Wellesley CS 307 Graphics class. 
+
+castleFacade.js is a javascript file that creates the facade of a castle 
+
+There is one function that may be called: 
+castleFacade(textures, height, radius, depth) 
+which returns the outer structure of four castle turrets joined together
+
+The parameters are:
+textures - array of texture materials
+height - height of the left-most turret
+radius - radius of the left-most turret
+depth - used to set depth of link piece, as well as place them
+
+The other three turrets in the facade are created relative to the left-most one
+
+Other information:
+All meshes that are part of the facade cast shadows 
+
+*/
+
+function castleFacade(textures, height, radius, depth) {
+
+/* This function creates and returns a turret object containing the turret and 
+spotted red roof 
+     * Parameters:
+     * height - height of the turret 
+     * radius - radius of the turret
+     */
+function turret(height, radius) {
+    
+    //repeat settings for grey stone texture used for the turret 
+    textures[0].wrapS = THREE.RepeatWrapping; 
+    textures[0].wrapT = THREE.RepeatWrapping; 
+    textures[0].repeat.set(2, 3);
+    textures[0].needsUpdate = true;
+    
+    var turretObj = new THREE.Object3D(); 
+    
+    //creating turret and its roof
+    var turretGeom = new THREE.CylinderGeometry(radius,radius,height,30,30); 
+    var turretMat = new THREE.MeshPhongMaterial({map: textures[0]}); 
+    var turret = new THREE.Mesh(turretGeom, turretMat); 
+    turret.castShadow = true; 
+    
+    var topGeom = new THREE.ConeGeometry(radius*1.6,height/3,30,30); 
+    var topMat = new THREE.MeshPhongMaterial({map: textures[1]});
+    var top = new THREE.Mesh(topGeom, topMat);
+    top.castShadow = true; 
+    
+    //position them so turret is sitting on the ground
+    turret.position.y = height/2; 
+    top.position.y = height+(height/6); 
+    
+    turretObj.add(turret); 
+    turretObj.add(top); 
+    
+    return turretObj; 
+}
+
+
+/* This function creates and returns a link that runs between each turret
+     * Parameters:
+     * length - distance between two turrets
+     * height - height of the link 
+     * depth - depth of the link 
+     */
+function link(length, height, depth) {
+
+    var linkGeom = new THREE.BoxGeometry(length, height, depth); 
+    var linkMat = new THREE.MeshToonMaterial({color: 0xd3443f});
+    var link = new THREE.Mesh(linkGeom, linkMat);
+    link.castShadow = true; 
+    
+    return link; 
+    
+}
+
+/* This function creates and returns the facade object containing four turrets
+and three links between them
+spotted red roof 
+     * Parameters:
+     * height - height of the leftmost turret 
+     * radius - radius of all the turrets
+     * depth - depth of the link 
+     */
+function createFacade(height,radius,depth) {
+    
+    var facade = new THREE.Object3D(); 
+    
+    //creating and positioning the turrets relative to the leftmost one 
+    var turret1 = turret(height, radius); 
+    var turret2 = turret(height*1.4, radius); 
+    var turret3 = turret(height*1.2, radius);
+    var turret4 = turret(height*1.1, radius);
+    
+    turret1.position.x = -30; 
+    turret2.position.x = -7;
+    turret3.position.x = 16;
+    turret4.position.set(16,0,23);  
+    
+    //distance between turrets
+    var length = 23; 
+    
+    //creating and positioning links to sit between turrets
+    var link1 = link(length, 2, depth)
+    var link2 = link(length, 2, depth); 
+    var link3 = link(length, 2, depth); 
+    
+    link1.position.set(-30+(radius*2),height/2,depth-radius); 
+    link2.position.set(-7+(radius*2),height/2,depth-radius); 
+    link3.position.set(16,height/2,depth+radius);
+    link3.rotation.y = Math.PI/2;
+    
+    facade.add(turret1); 
+    facade.add(turret2); 
+    facade.add(turret3); 
+    facade.add(turret4); 
+    facade.add(link1); 
+    facade.add(link2);
+    facade.add(link3); 
+    
+    return facade; 
+}
+
+var castleFacade = createFacade(height, radius, depth);
+return castleFacade; 
+
+}/*
+Copyright 2018 Maya Mubayi, Wellesley College Computer Science Department
+This code is intended for project submission and is open for use to students in 
+the Wellesley CS 307 Graphics class. 
+
+frozenFairy.js is a javascript file that creates a icy-looking crystal that
+hides a fairy within
+
+There is one function that may be called: 
+frozenFairy(radius,height)
+which returns a frozen gem with a fairy frozen inside
+
+The parameters are:
+radius - radius for the three geometries that make up the gem
+height - height of the gem
+
+The other three turrets in the facade are created relative to the left-most one
+
+Other information:
+Due to algorithms used for drawing the scene and the fact that the geometries for
+the fairy and the gem overlap, you can only really see it when the outside of the
+gem is not showing. 
+
+*/
+
+function frozenFairy(radius,height) {
+    
+    var fairy = new THREE.Object3D(); 
+    
+    //anonymous function to load and use the fairy texture on a cylinder, then 
+    //add the fairy cylinder to the fairy object
+    TW.loadTextures(["fairy.jpg"],
+            function (textures) {
+                textures[0].wrapT = THREE.RepeatMirrorWrapping;
+                
+                var lightIce = new THREE.MeshToonMaterial({color: 0x10B8F7,
+                            map: textures[0], transparent: true, 
+                            opacity: 0.7, specular: 0xb8b9ba, shininess: 40});
+                            
+                var insideGeom = new THREE.CylinderGeometry(radius/2,radius/2,height,20,20); 
+                var inside = new THREE.Mesh(insideGeom, lightIce); 
+                inside.rotation.y = Math.PI; 
+                fairy.add(inside); 
+            } );
+
+    /* This function creates and returns the ice gem with a fairy cylinder inside 
+     * Parameters:
+     * radius - radius of the three parts of the gem
+     * height - height of the cylinder geometry that makes middle part of gem
+     */
+    function frozenDiamond(radius, height) {
+        var diamond = new THREE.Object3D(); 
+        
+        //adding all components of the frozen fairy to the diamond object
+        
+        //use low number of radial segments to make less-smooth appearance
+        var topGeom = new THREE.ConeGeometry(radius, height/2, 6, 6); 
+        var blueIce = new THREE.MeshToonMaterial({color: 0x10B8F7 , transparent: true, 
+                            opacity: 0.75, specular: 0xb8b9ba, shininess: 40});
+        
+        
+        var top = new THREE.Mesh(topGeom, blueIce);
+ 
+        var bottomGeom = new THREE.ConeGeometry(radius, height/2, 6, 6);
+        var bottom = new THREE.Mesh(bottomGeom, blueIce); 
+        
+        
+        var middleGeom = new THREE.CylinderGeometry(radius,radius,height,6,6); 
+        var middle = new THREE.Mesh(middleGeom, blueIce); 
+        
+        middle.position.y = height; 
+        fairy.position.y = height; 
+        top.position.y = height + height-height/4; 
+        bottom.position.y = height + (-height+height/4); 
+        bottom.rotation.x = Math.PI; 
+        
+        diamond.add(top); 
+        diamond.add(middle); 
+        diamond.add(fairy); 
+        diamond.add(bottom); 
+        
+        return diamond; 
+        
+        }
+    
+    var frozen = frozenDiamond(radius, height); 
+    return frozen; 
+}/*
+Copyright 2018 Maya Mubayi, Wellesley College Computer Science Department
+This code is intended for project submission and is open for use to students in 
+the Wellesley CS 307 Graphics class. 
+
+blockSteps.js is a javascript file that creates block clusters. 
+
+There is one function that may be called: 
+blockSteps(textures, width, height, depth, x, y, z) 
+which returns a set of blocks of different sizes positioned like stairs 
+
+The parameters are:
+textures - array of texture materials
+width - width of the middle box in the cluster
+height - height of the middle box in the cluster
+depth - depth of the middle box in the cluster
+x - x coordinate for centre of middle box
+y - y coordinate for centre of middle box
+z - z coordinate for centre of middle box
+
+The other boxes in the cluster are created relative to the middle one. 
+
+
+Other information:
+Contains an array of colours you want to colour the faces differently instead of
+mapping different textures onto them. 
+
+*/
+
+function blockSteps(textures, width, height, depth, x, y, z) {
+    
+    //var colours = [0xc1a2aa, 0xc1a2aa, 0xc1a2aa, 0xc1a2aa, 0xc1a2aa, 0xc1a2aa];
+
+    /* This function creates and returns a single block with a texture mapped
+     * Parameters:
+     * width - width of block
+     * height - height of block
+     * depth - depth of block
+     */
+    function block(width, height, depth) {
+    
+        
+        //repeat settings for texture used for sides of blocks
+        textures[6].wrapS = THREE.RepeatWrapping; 
+        textures[6].wrapT = THREE.RepeatWrapping; 
+        textures[6].repeat.set(3, 3);
+        textures[6].needsUpdate = true;
+        
+        //setting up the array of textures used for creating a block
+        var textureMaterial = [];
+                                        
+        textureMaterial[0] = new THREE.MeshToonMaterial({
+                                        color: 0xce9777, side: THREE.DoubleSide, map: textures[5]});
+    
+        textureMaterial[1] = new THREE.MeshToonMaterial({
+                                        color: 0xE2AB8C, side: THREE.DoubleSide, map: textures[6]});
+    
+        var stepGeom = new THREE.BoxGeometry(width,height,depth); 
+                                        
+        //set side faces to be dirt/soil material 
+        TW.setMaterialForFaces(stepGeom, 0, 0,1,2,3, 8, 9, 10, 11); 
+        //set top and bottom faces to be terrain
+        TW.setMaterialForFaces(stepGeom, 1, 4,5,6,7); 
+        
+        var step = new THREE.Mesh(stepGeom, textureMaterial); 
+        
+        return step;
+    }
+    
+    /* This function creates and returns an object containing 7 blocks 
+     * Parameters:
+     * width - width of block
+     * height - height of block
+     * depth - depth of block
+     * x - x coordinate of the cluster
+     * y - y coordinate of the cluster
+     * z - z coordinate of the cluster
+     */
+    function cluster(width, height, depth, x, y, z) {
+    
+        var cluster = new THREE.Object3D();
+        
+        //adjust the heights so boxes are not all the same
+        var height2 = height*0.8; 
+        var height3 = height2*0.8; 
+        var height4 = height*1.2; 
+        var height5 = height*0.5;
+        var height6 = height5*0.8; 
+        var height7 = height4; 
+        
+        var widthFromMain = (width/2)+(width/2)/2;
+        var depth6 = depth*0.8;
+        var smallWidthFromMain = (width/2)+(depth6/2); 
+        var smallDepthFromMain = depth6+depth*0.1
+        
+        //creating all blocks, relative to the first block (middle of cluster)
+        var block1 = block(width,height,depth); 
+        var block2 = block(width,height2,depth); 
+        var block3 = block(width,height3,depth); 
+        var block4 = block(width*1.5,height4,depth)
+        var block5 = block(depth,height5,depth)
+        var block6 = block(depth6,height6,depth6);
+        var block7 = block(width+(depth*2),height7,depth*1.6);
+        
+        block1.position.set(x,y,z); 
+        block2.position.set(x, height2/2, z+(depth)); 
+        block3.position.set(x, height3/2, z+(depth*2)); 
+        block4.position.set(x+widthFromMain, height4/2, z); 
+        block5.position.set(x-widthFromMain, height5/2, z); 
+        block6.position.set(x-smallWidthFromMain, height6/2, z+smallDepthFromMain); 
+        block7.position.set(x,height7/2,z-(depth*1.3));
+        
+        block4.rotation.y = Math.PI/2; 
+        
+        cluster.add(block1); 
+        cluster.add(block2); 
+        cluster.add(block3); 
+        cluster.add(block4); 
+        cluster.add(block5); 
+        cluster.add(block6);
+        cluster.add(block7); 
+        
+        return cluster; 
+    }
+
+   var blockCluster = cluster(width,height,depth,x,y,z); 
+   return blockCluster; 
+
+}<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>Spyro.js app</title>
+    <style>
+      
+      canvas {
+          display: block;
+          margin: 10px auto;
+          width: 800px;
+          height: 500px;
+      }
+    </style>
+    <script src="../libs/three.min.js"></script>
+    <script src="../libs/OrbitControls.js"></script>
+    <script src="../libs/tw.js"></script>
+    <script src="blockSteps.js"></script>
+    <script src="castleFacade.js"></script>
+    <script src="frozenFairy.js"></script>
+  </head>
+<body>
+
+<h1>Spyro: Season of Ice</h1>
+<h2> Autumn Fairy Home</h2>
+
+<script>
+
+var scene = new THREE.Scene();
+
+// ====================================================================
+
+var ambient = new THREE.AmbientLight(0xffffff); //white ambient light
+scene.add(ambient);
+
+//light orange spotlight (late afternoon)
+var light = new THREE.SpotLight(0xb78164, 0.4); 
+light.position.set(0,100,70);
+light.castShadow = true;
+scene.add(light);
+
+//add the frozen fairy to the scene 
+var fairy = frozenFairy(5,8); 
+fairy.position.set(-10,0,30);
+scene.add(fairy); 
+
+// ================================================================
+// 
+// We always need a renderer
+var renderer = new THREE.WebGLRenderer();
+renderer.shadowMap.enabled = true; 
+TW.mainInit(renderer,scene);
+
+
+/* Anonymous function to load and use all the following textures fo the cluster of
+//boxes as well as the castle facde and finally, the background planes */
+TW.loadTextures(["stone-wall.jpg", "top-mat.jpg", "background.jpg", 
+                "spyro-terrain.jpg", "purple-water.jpg", "soil-mat.jpg", "terrain.jpg"],
+            function (textures) {
+
+                scene.add(castleFacade(textures,30,5,5)); 
+                
+                //adding two clusters of blocks to the scene
+                var blockCluster1 = blockSteps(textures, 20,20,10,20,10,20);
+                blockCluster1.position.set(35, 0, -74);
+                scene.add(blockCluster1); 
+                
+                var blockCluster2 = blockSteps(textures, 15,15,8,20,10,20);
+                blockCluster2.rotation.y = Math.PI/2; 
+                blockCluster2.position.set(-74, 0, 75);
+                
+                scene.add(blockCluster2); 
+                
+                //adding the sky and floor planes 
+                
+                var skyGeom = new THREE.PlaneGeometry(150,100);
+                var skyMat = new THREE.MeshPhongMaterial({map:textures[2], side: THREE.DoubleSide});
+                var skyMesh = new THREE.Mesh(skyGeom, skyMat);
+                skyMesh.position.set(0,50,-75);
+                scene.add(skyMesh); 
+            
+                var groundGeom = new THREE.PlaneGeometry(150,150);
+                var groundMat = new THREE.MeshPhongMaterial({map:textures[3], side: THREE.DoubleSide});
+                var groundMesh = new THREE.Mesh(groundGeom, groundMat);
+                groundMesh.receiveShadow = true; 
+                groundMesh.rotation.x = -Math.PI/2;
+                scene.add(groundMesh); 
+                
+                TW.render();
+            } );
+
+
+TW.cameraSetup(renderer,
+               scene,
+               {minx: -100, maxx: 100,
+                miny: 0, maxy: 100,
+                minz: -100, maxz: 100});
+</script>    
+
+</body>
+</html>
