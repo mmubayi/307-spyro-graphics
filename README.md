@@ -12,6 +12,6 @@ Working on this! For now, please see demo images.
 
 
 ## Demo Images
-![alt text](https://github.com/mmubayi/307-spyro-graphics/sample_pics/full-scene.png "View of full scene")
+![alt text](https://github.com/mmubayi/307-spyro-graphics/blob/master/sample_pics/full-scene.png "View of full scene")
 
-![alt text](https://github.com/mmubayi/307-spyro-graphics/sample_pics/side-view.png "Side view of scene")
+![alt text](https://github.com/mmubayi/307-spyro-graphics/blob/master/sample_pics/side-view.png "Side view of scene")
