@@ -7,6 +7,9 @@ A 3D modelling of a section of the Autumn Fairy Home level of the GBA game, 'Spy
 - transparency
 - Phong materials/lighting.
 ---
+
+This project was created using the THREE.js 3D library for JavaScript. 
+
 Currently, only Wellesley students can view the project demo [here](http://cs.wellesley.edu/~mmubayi/cs307-graphics-project-final/project.html).
 Working on this! For now, please see demo images.
 
