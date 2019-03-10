@@ -1,4 +1,4 @@
-# 307 graphics 
+# Graphics: Spyro Autumn Fairy Home
 
 A 3D modelling of a section of the Autumn Fairy Home level of the GBA game, 'Spyro: Season of Ice', using:
 - hierarchical modelling 
