@@ -10,8 +10,10 @@ A 3D modelling of a section of the Autumn Fairy Home level of the GBA game, 'Spy
 
 This project was created using the THREE.js 3D library for JavaScript for my introduction to computer graphics class.
 
-Currently, only Wellesley students can view the project demo [here](http://cs.wellesley.edu/~mmubayi/cs307-graphics-project-final/project.html).
-Working on this! For now, please see demo images.
+View the project demo [here](https://mmubayi.github.io/spyro-graphics/).
+Otherwise, please see demo images below. 
+
+CURRENTLY: working on editing project folder structure to be more neat.
 
 
 ## Demo Images
