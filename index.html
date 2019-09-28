@@ -1,0 +1,106 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>Spyro.js app</title>
+    <style>
+      
+      canvas {
+          display: block;
+          margin: 10px auto;
+          width: 800px;
+          height: 500px;
+      }
+    </style>
+    <script src="libs/three.min.js"></script>
+    <script src="libs/OrbitControls.js"></script>
+    <script src="libs/tw.js"></script>
+    <script src="blockSteps.js"></script>
+    <script src="castleFacade.js"></script>
+    <script src="frozenFairy.js"></script>
+    <script src="portal.js"></script>
+  </head>
+<body>
+
+<h1>Spyro: Season of Ice</h1>
+<h2> Autumn Fairy Home</h2>
+
+<script>
+
+var scene = new THREE.Scene();
+
+// ====================================================================
+
+var ambient = new THREE.AmbientLight(0xffffff); //white ambient light
+scene.add(ambient);
+
+//light orange spotlight (late afternoon)
+var light = new THREE.PointLight(0xed8712, 0.4); 
+light.position.set(40,50,70);
+light.castShadow = true;
+scene.add(light);
+
+//add the frozen fairy to the scene 
+var fairy = frozenFairy(5,8); 
+fairy.position.set(-10,0,30);
+scene.add(fairy); 
+
+var portal = arch(); 
+portal.position.set(50,23,-70);
+scene.add(portal);  
+
+// ================================================================
+// 
+// We always need a renderer
+var renderer = new THREE.WebGLRenderer();
+renderer.shadowMap.enabled = true; 
+TW.mainInit(renderer,scene);
+
+
+/* Anonymous function to load and use all the following textures for the cluster of
+boxes as well as the castle facade and finally, the background planes */
+TW.loadTextures(["stone-wall.jpg", "top-mat.jpg", "background-spyro.jpg", 
+                "spyro-terrain.jpg", "soil-mat.jpg", "terrain.jpg"],
+            function (textures) {
+
+                scene.add(castleFacade(textures,30,5,5)); 
+                
+                //adding two clusters of blocks to the scene
+                var blockCluster1 = blockSteps(textures, 20,20,10,20,10,20);
+                blockCluster1.position.set(35, 0, -74);
+                scene.add(blockCluster1); 
+                
+                var blockCluster2 = blockSteps(textures, 15,15,8,20,10,20);
+                blockCluster2.rotation.y = Math.PI/2; 
+                blockCluster2.position.set(-74, 0, 75);
+                
+                scene.add(blockCluster2); 
+                
+                //adding the sky and floor planes 
+                
+                var skyGeom = new THREE.PlaneGeometry(150,100);
+                var skyMat = new THREE.MeshPhongMaterial({map:textures[2], side: THREE.DoubleSide});
+                var skyMesh = new THREE.Mesh(skyGeom, skyMat);
+                skyMesh.position.set(0,50,-75);
+                scene.add(skyMesh); 
+            
+                var groundGeom = new THREE.PlaneGeometry(150,150);
+                var groundMat = new THREE.MeshPhongMaterial({map:textures[3], side: THREE.DoubleSide});
+                var groundMesh = new THREE.Mesh(groundGeom, groundMat);
+                groundMesh.receiveShadow = true; 
+                groundMesh.rotation.x = -Math.PI/2;
+                scene.add(groundMesh); 
+                
+                TW.render();
+            } );
+
+
+TW.cameraSetup(renderer,
+               scene,
+               {minx: -100, maxx: 100,
+                miny: 0, maxy: 100,
+                minz: -100, maxz: 100});
+</script>    
+
+</body>
+</html>
